@@ -1,125 +1,74 @@
-from connection import get_connet
-from passlib.hash import pbkdf2_sha256 as sha256
+from connection import get_connect
+from servicos_produto import vender, cadastro_produto, listar_produtos, excluir_produto, tabela_produto
+from servicos_usuario import criar_usuario, criar_tabela, verificar_usuario, excluir_usuario
+import pwinput
+from app import barra_progresso
 
-def Criar_usuario(nome, email, senha):
-    opcao = input('Você é um usuário novo? S - Sim | N - Não: ').lower()
-    if opcao == 's':
-        try:
-            conn = get_connet()
-            cursor = conn.cursor()
-            senha = sha256.hash(senha)
-            cursor.execute('INSERT INTO TB_USUARIO(nome, email, senha) VALUES (?, ?, ?)',
-                        (nome, email, senha)
-            )
-            conn.commit()
-            print('Usuário cadastrado com sucesso!')
 
-        except Exception as e:
-            print(f'Falha ao criar usuario: {e}')
-    elif opcao == 'n':
-        listar_usuario()
+print('Seja bem vindo ao mercado dev! ')
+def login():
+    while True:
 
-def Verificar_usuario():
-    email1 = input('Digite seu email: ').strip()
-    senha1 = input('Digite sua senha: ').strip()
+        opcao = input('Você é um usuário novo? S - Sim | N - Não: ').lower()
+        if opcao == 's':
+            nome = input('Digite seu nome: ')
+            email = input('Digite seu email: ').strip().lower()
+            senha = pwinput.pwinput('Digite sua senha: ').strip()
+            criar_usuario(nome, email, senha)
+            print('Usuário criado com sucesso! Faça login para continuar')
+            print(f"Usuário salvo com email: '{email}'")
 
-    try:
-        conn = get_connet()
-        cursor = conn.cursor()
-        sha256.verify(senha, senha1)
-        if senha == senha1:
-        
-            cursor.execute('SELECT EMAIL FROM TB_USUARIO')
-            usuarios = cursor.fetchall()
-            if email1 in usuarios:
-                print('Login bem sucedido!')
-            
-            cadastro_produto()
+            verificar_usuario()
+            break
+        elif opcao == 'n':
+            verificar_usuario()
+            break
         else:
-            print('Esse login não existe!')
-            opcoes = input('Deseja criar um login? S - Sim | N - Não: ').lower()
-            if opcoes == 's':
-                criar_usuario()
-            elif opcoes == 'n':
-                print('Saindo do sistema...')
+            print('Opção inválida')
+
+def menu():
+    while True:
+        print('1 - Cadastrar produtos')
+        print('2 - Listar produtos')
+        print('3 - Vender produtos')
+        print('4 - Excluir produtos') 
+        print('5 - Excluir usuário')
+        print('6 - Sair do sistema')
+
+        opcao_menu = input('Digite o numero correspondente à ação desejada')
+        match opcao_menu:
+            case '1':
+                tabela_produto()                
+                cadastro_produto()
+            case '2':
+                listar_produtos()
+            case '3':
+                ids = int(input('Digite o id do produto desejado'))
+                qtd_saida = int(input('Digite a quantidade do produto que você quer'))
+                vender(qtd_saida)
+            case '4':
+                excluir = int(input('Digite o id do usuário que deseja excluir')).strip()
+                excluir_produto(id)
+            case '5':
+                excluir_usuario(id)
+                print('Usuário excluído com sucesso!')
+            case '6':
+                barra_progresso()
                 exit()
 
-def Cadastro_produto():
-    try:
-        conn = get_connet()
-        cursor = conn.cursor()
-        produto = input('Digite a descrição do produto: ').strip()
-        preco = int(input('Digite o preço: ')).strip().replace(',','.')
-        quantidade = int(input('Digite a quantidade: '))
+def main():
+    criar_tabela()
+    print('Seja bem vindo ao mercado dev!')
+    login()
+    tabela_produto()
+    menu()
 
-        cursor.execute('INSERT INTO TB_PRODUTO(produto, preco, quantidade) VALUES (?, ?, ?)',
-                       (produto, preco, quantidade)
-        )
-        conn.commit()
-        print('Produto cadastrado com sucesso!')
-
-    except Exception as e:
-        print(f'Falha ao cadastrar produto: {e}')
-
-def Editar_produto():
-    try:
-        conn = get_connet()
-        cursor = conn.cursor()
-        produto_novo = input('Digite o produto que deseja editar: ').strip()
-
-        cursor.execute('SELECT DESCRICAO FROM TB_PRODUTO')
-        produtos = cursor.fetchall()
-        if produto_novo in produtos:
-            print('Produto encontrado!')
-            produto = input('Digite a nova descrição do produto: ').strip()
-            preco_novo = int(input('Digite o novo preço: ')).strip().replace(',','.')
-            quantidade_nova = int(input('Digite a nova quantidade: '))
-            id = input('Digite o ID do produto: ')
-            if produto:
-                cursor.execute('UPDATE SET DESC = ?, WHERE ID = ?',
-                                (nova_desc, id))
-            if preco_novo:
-                cursor.execute('UPDATE SET DESC = ?, WHERE ID = ?',
-                                (preco_novo, id))
-            if quantidade_nova:
-                cursor.execute('UPDATE SET DESC = ?, WHERE ID = ?',
-                                (quantidade_nova, id))
-            
-
-            
-        else:
-            print('Esse produto não existe')
-    except Exception as e:
-            print('Falha ao editar produto!')
+if __name__ == '__main__':
+    main()
 
 
-def Listar_produtos():
-    try:
-        conn = get_connet()
-        cursor = conn.cursor()
-        cursor.execute('SELECT produto, PRECO, QUANTIDADE FROM TB_PRODUTO')
-        produtos = cursor.fetchall()
-        print(produtos)
-            
 
-            
-        except Exception as e:
-            print('Não há produto registrado!')
 
-def Vender(id,qtd_saida):
-    try:
-        conn = get_connet()
-        cursor = conn.cursor()
-        produto = input('Digite o id do produto que deseja vender: ').strip()
-
-        cursor.execute('SELECT ID FROM TB_PRODUTO')
-        produtos = cursor.fetchall()
-        if produto in produtos:
-            if qtd_banco > 0
-                if qtd_banco > qtd_saida
-                    qtd_restante = qtd_banco - qtd_saida
-                else:
-                    print('Quantidade do banco insuficiente.')
 
 
     

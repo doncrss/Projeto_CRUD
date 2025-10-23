@@ -1,7 +1,7 @@
 '''import mysql.connector
 from mysql.connector import Error
 
-def get_connetion():
+def get_connection():
     try:
         conexao = mysql.connector.connect(
             host='195.179.238.1',
@@ -21,7 +21,7 @@ def get_connetion():
 
 import sqlite3
 
-def get_connet():
+def get_connect():
     try:
         conexao = sqlite3.connect('controle_usuario.db')
         print('Conexão bem sucedida!')
@@ -32,5 +32,5 @@ def get_connet():
         return None
 
 if __name__ == '__main__':
-    get_connet()
+    get_connect()
     
