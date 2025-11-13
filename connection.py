@@ -13,7 +13,7 @@ except Exception as e:
 Base = declarative_base()
 
 
-
+Base = declarative_base()
 if __name__ == '__main__':
     engine.connect()
     

@@ -3,6 +3,7 @@ from servicos_produto import vender, cadastro_produto, listar_produtos, excluir_
 from servicos_usuario import criar_usuario, criar_tabela, verificar_usuario, excluir_usuario
 import pwinput
 from app import barra_progresso
+from Projeto_CRUD.models.usuario_model import Usuario
 
 
 print('Seja bem vindo ao mercado dev! ')
@@ -14,7 +15,11 @@ def login():
             nome = input('Digite seu nome: ')
             email = input('Digite seu email: ').strip().lower()
             senha = pwinput.pwinput('Digite sua senha: ').strip()
-            criar_usuario(nome, email, senha)
+
+            usuario_controller.usuario_service.criar_usuario(nome, email, senha)
+            usuario = Usuario(nome=nome, email=email, senha=senha)
+
+
             print('Usuário criado com sucesso! Faça login para continuar')
             print(f"Usuário salvo com email: '{email}'")
 
@@ -33,7 +38,8 @@ def menu():
         print('3 - Vender produtos')
         print('4 - Excluir produtos') 
         print('5 - Excluir usuário')
-        print('6 - Sair do sistema')
+        print('6 - Editar usuário')
+        print('7 - Sair do sistema')
 
         opcao_menu = input('Digite o numero correspondente à ação desejada')
         match opcao_menu:
@@ -54,7 +60,7 @@ def menu():
                 print('Usuário excluído com sucesso!')
             case '6':
                 barra_progresso()
-                exit()
+
 
 def main():
     criar_tabela()

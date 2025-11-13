@@ -1,74 +1,46 @@
-from connection import get_connect
-from passlib.hash import pbkdf2_sha256 as sha256
-import pwinput
+from Projeto_CRUD.models.usuario_model import Usuario
+from sqlalchemy.orm import Session
+session = Session()
 
-def criar_usuario(nome, email, senha):
-    opcao = input('Você é um usuário novo? S - Sim | N - Não: ').lower()
-    if opcao == 's':
-        try:
-            conn = get_connect()
-            cursor = conn.cursor()
-            senha = sha256.hash(senha)
-            cursor.execute('INSERT INTO TB_USUARIO(nome, email, senha) VALUES (?, ?, ?)',
-                        (nome, email, senha)
-            )
-            conn.commit()
-            print('Usuário cadastrado com sucesso!')
+def criar_usuario(usuario):
+    usuario_db = Usuario(nome=usuario.nome, email =usuario.email, senha=usuario.senha)
+    usuario_db.gen_senha(usuario.senha)
 
-        except Exception as e:
-            print(f'Falha ao criar usuario: {e}')
-    elif opcao == 'n':
-        verificar_usuario()
+    session.add(usuario_db)
+    session.commit()
+    return usuario_db
 
-def verificar_usuario():
-    email = input('Digite seu email: ').strip().lower()
-    senha_digitada = pwinput.pwinput('Digite sua senha: ').strip()
+def listar_usuario_email(email):
+    usuario_db = session.query(Usuario).filter(Usuario.email == email).first()
+    return usuario_db
 
-    try:
-        conn = get_connect()
-        cursor = conn.cursor()
-        cursor.execute("SELECT senha FROM TB_USUARIO WHERE email = ?", (email,))
-        resultado = cursor.fetchone()
+def listar_usuario_id(id):
+    usuarios_db = session.query(Usuario).all()
+    return usuarios_db
 
-        if resultado is None:
-            print("Usuário não encontrado.")
-            return False
-
-        senha_hash = resultado[0]
-
-        if sha256.verify(senha_digitada, senha_hash):
-            print("Login bem-sucedido!")
-            return True
-        else:
-            print("Senha incorreta.")
-            return False
-    except Exception as e:
-        print(f'Falha ao verificar login: {e}')
-        return False
 
 def excluir_usuario(id):
-    try:
-        print(f'ID recebido: {id} (tipo: {type(id)})')  # debug
-        conn = get_connect()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM TB_USUARIO WHERE ID=?", (id,))
-        conn.commit()
-    except Exception as e:
-        print(f'Falha ao excluir usuário: {e}')
+    usuario_db = session.query(Usuario).filter(Usuario.id == id).first()
+    if usuario_db:
+        session.delete(usuario_db)
+        session.commit()
+        return True
+    return False
 
-def criar_tabela():
-    try:
-        conn = get_connect()
-        cursor = conn.cursor()
+def editar_usuario(email, Usuario):
+    usuario_db = session.query(Usuario).filter(Usuario.email == email).first()
 
-        cursor.execute('''
-        CREATE TABLE TB_USUARIO(
-            ID INTEGER PRIMARY KEY,
-            NOME VARCHAR(120) NOT NULL,
-            EMAIL VARCHAR(120) UNIQUE,
-            SENHA VARCHAR(255)
-        );
-        ''')
+    if not usuario_db:
+        return None
+    
+    usuario_db.nome = Usuario.nome
+    usuario_db.email = Usuario.email
+    session.commit()
+    return Usuario
+def usuario_controller()
+        usuario = servicos_usuario.listar_usuario_id(id)
+        print(f'{'-'*30} Editar o Usuário {usuario}! {'-'*30}')
 
-    except Exception as e:
-        print(f'Falha ao criar tabela: {e}')
+        novo_nome = input('Digite o novo nome: ').strip().title()
+
+        servicos_usuario.editar_usuario
